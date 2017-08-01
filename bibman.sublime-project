@@ -1,0 +1,29 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "folder_include_patterns": ["src"],
+            "file_include_patterns": ["*.py", "*.md"]
+        },
+    ],
+
+    "build_systems":
+    [
+        {
+            "name": "Python Project",
+            "selector": "source.python",
+            "shell_cmd": "pyinstaller --distpath $project_path/dist --workpath $project_path/build --specpath $project_path/build --onefile --noconfirm --windowed bibman.py",
+
+            "variants":
+            [
+                {
+                    "name": "Run",
+                    "shell_cmd": "",
+                    "cmd": "$project_path/dist/bibman",
+                    "working_dir": "$project_path/dist"
+                }
+            ]
+        }
+    ]
+}
