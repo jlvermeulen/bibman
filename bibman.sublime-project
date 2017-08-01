@@ -15,6 +15,11 @@
             "selector": "source.python",
             "shell_cmd": "pyinstaller --distpath $project_path/dist --workpath $project_path/build --specpath $project_path/build --onefile --noconfirm --windowed bibman.py",
 
+            "linux":
+            {
+                "path": "/usr/local/bin:/usr/bin"
+            },
+
             "variants":
             [
                 {

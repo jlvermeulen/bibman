@@ -3,19 +3,32 @@
 import tkinter as tk
 from tkinter import messagebox
 
+import bibtexparser
+
 import database
 
 import os.path, glob, cProfile
+
+test_string = '''@article{oliva13,
+    author = "Oliva, R. and Pelechano, N.",
+    title = "{NEOGEN}: {N}ear optimal generator of navigation meshes for {3D} multi-layered environments",
+    journal = "Computers \& Graphics",
+    volume = "37",
+    number = "5",
+    year = "2013",
+    pages = "403--412"
+}
+'''
 
 class MainWindow(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
 
-        self.tags = ['title', 'author', 'year', 'entry_type']
-        self.tag_data = {}
-        for tag in self.tags:
-            self.tag_data[tag] = []
+        self.fields = ['title', 'author', 'year', 'ENTRYTYPE']
+        self.entry_data = {}
+        for field in self.fields:
+            self.entry_data[field] = []
 
         self.parent.title('bibman')
         self.pack(fill = tk.BOTH, expand = 1)
@@ -23,8 +36,11 @@ class MainWindow(tk.Frame):
         self.frame = tk.Frame(self)
         self.frame.pack(fill = tk.BOTH, expand = 1)
 
-        self.button = tk.Button(self.frame, text = "Read data", command = self.fill_table)
-        self.button.grid(row = 0, column = 0, sticky = 'w')
+        self.parse_button = tk.Button(self.frame, text = "Parse", command = self.parse_bibtex)
+        self.parse_button.grid(row = 0, column = 0, sticky = 'w')
+
+        self.export_button = tk.Button(self.frame, text = "Write to BibTeX", command = self.write_bibtex)
+        self.export_button.grid(row = 0, column = 1, stick = 'w')
 
         self.title_label      = tk.Label(self.frame, text = 'Title:')
         self.author_label     = tk.Label(self.frame, text = 'Author:')
@@ -36,30 +52,33 @@ class MainWindow(tk.Frame):
         self.year_label.grid(row = 1, column = 2, sticky = 'w', padx = 10)
         self.entry_type_label.grid(row = 1, column = 3, sticky = 'w', padx = 10)
 
-    def fill_table(self):
+    def parse_bibtex(self):
+        self.parse_data(test_string)
+        self.show_data()
+        database.session.commit()
+
+    def write_bibtex(self):
         return
-        #self.gather_data(path)
-        #self.show_data()
-        #database.session.commit()
 
-    def gather_data(self, path):
-        self.tracks = []
+    def parse_data(self, bibtex_entry):
+        self.sources = []
+        self.sources.append(database.Source())
 
-        for file in glob.glob(os.path.join(path, '*.flac')):
-            self.tracks.append(database.Track())
+        parsed = bibtexparser.loads(bibtex_entry)
+        print(parsed.entries)
 
-            for tag in self.tags:
-                value = metaflac.get_attribute(tag, file)
-                self.tag_data[tag].append(value)
-                setattr(self.tracks[-1], tag, value)
+        for field in self.fields:
+            value = parsed.entries[0][field]
+            self.entry_data[field].append(value)
+            setattr(self.sources[-1], field, value)
 
-            database.session.add(self.tracks[-1])
+        database.session.add(self.sources[-1])
 
     def show_data(self):
         i = 0
-        for tag in self.tags:
+        for field in self.fields:
             j = 2
-            for value in self.tag_data[tag]:
+            for value in self.entry_data[field]:
                 label = tk.Label(self.frame, text = value)
                 label.grid(row = j, column = i, sticky = 'w', padx = 10)
                 j = j + 1
