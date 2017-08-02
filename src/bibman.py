@@ -1,13 +1,14 @@
 #! /usr/bin/env python3
 
+from tkinter import ttk
 import tkinter as tk
-from tkinter import messagebox
-
-import bibtexparser
 
 import database
+from addsource import AddSource
+from findsource import FindSource
+from exportbibtex import ExportBibtex
 
-import os.path, glob, cProfile
+import os.path, glob, cProfile, bibtexparser
 
 test_string = '''@article{oliva13,
     author = "Oliva, R. and Pelechano, N.",
@@ -33,61 +34,17 @@ class MainWindow(tk.Frame):
         self.parent.title('bibman')
         self.pack(fill = 'both', expand = 1, padx = 5, pady = 5)
 
-        tk.Grid.columnconfigure(self, 0, weight = 1)
-        tk.Grid.rowconfigure(self, 1, weight = 1)
+        self.tabs = ttk.Notebook(self)
 
-        self.build_navigation_bar()
-        self.build_add_frame()
-        self.build_search_frame()
-        self.build_export_frame()
+        self.add_source_frame    = AddSource(self)
+        self.find_source_frame   = FindSource(self)
+        self.export_bibtex_frame = ExportBibtex(self)
 
-        #self.title_label      = tk.Label(self.frame, text = 'Title:')
-        #self.author_label     = tk.Label(self.frame, text = 'Author:')
-        #self.year_label       = tk.Label(self.frame, text = 'Year:')
-        #self.entry_type_label = tk.Label(self.frame, text = 'Entry type:')
+        self.tabs.add(self.add_source_frame, text = 'Add source')
+        self.tabs.add(self.find_source_frame, text = 'Find source')
+        self.tabs.add(self.export_bibtex_frame, text = 'Generate .bib')
 
-        #self.title_label.grid(row = 1, column = 0, sticky = 'w', padx = 10)
-        #self.author_label.grid(row = 1, column = 1, sticky = 'w', padx = 10)
-        #self.year_label.grid(row = 1, column = 2, sticky = 'w', padx = 10)
-        #self.entry_type_label.grid(row = 1, column = 3, sticky = 'w', padx = 10)
-
-    def build_navigation_bar(self):
-        self.navigation_bar = tk.Frame(self)
-        self.navigation_bar.grid(row = 0, column = 0, sticky = 'nsew')
-        self.navigation_bar.configure(bg = 'red')
-
-        self.add_button = tk.Button(self.navigation_bar, text = 'Add source', command = lambda: self.switch_frame(self.add_frame))
-        self.add_button.pack(padx = 5, pady = (0, 5), side = 'left')
-
-        self.search_button = tk.Button(self.navigation_bar, text = 'Find source', command = lambda: self.switch_frame(self.search_frame))
-        self.search_button.pack(padx = 5, pady = (0, 5), side = 'left')
-
-        self.export_button = tk.Button(self.navigation_bar, text = 'Generate .bib', command = lambda: self.switch_frame(self.export_frame))
-        self.export_button.pack(padx = 5, pady = (0, 5), side = 'left')
-
-    def build_add_frame(self):
-        self.add_frame = tk.Frame(self)
-        self.add_frame.grid(row = 1, column = 0, sticky = 'nsew')
-        self.add_frame.configure(bg = 'blue')
-
-        tk.Label(self.add_frame, text = 'Add Frame', bg = 'green').pack(fill = 'both', expand = 1)
-
-    def build_search_frame(self):
-        self.search_frame = tk.Frame(self)
-        self.search_frame.grid(row = 1, column = 0, sticky = 'nsew')
-        self.search_frame.configure(bg = 'blue')
-
-        tk.Label(self.search_frame, text = 'Search Frame', bg = 'green').pack(fill = 'both', expand = 1)
-
-    def build_export_frame(self):
-        self.export_frame = tk.Frame(self)
-        self.export_frame.grid(row = 1, column = 0, sticky = 'nsew')
-        self.export_frame.configure(bg = 'blue')
-
-        tk.Label(self.export_frame, text = 'Export Frame', bg = 'green').pack(fill = 'both', expand = 1)
-
-    def switch_frame(self, frame):
-        frame.tkraise()
+        self.tabs.pack(fill = 'both', expand = 1)
 
     def parse_bibtex(self):
         return
