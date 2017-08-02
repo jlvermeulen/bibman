@@ -24,12 +24,9 @@ class Source(Base):
 
 session = None
 def init():
-    create_new = os.path.isfile('bib.db')
-    print(create_new)
-
     engine = sql.create_engine('sqlite:///bib.db')
 
-    if create_new:
+    if not os.path.isfile('bib.db'):
         Base.metadata.create_all(engine)
 
     Base.metadata.bind = engine

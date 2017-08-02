@@ -79,14 +79,30 @@ class MainWindow(tk.Frame):
     def write_bibtex(self):
         return
 
+def close_event():
+    global root
+
+    with open('settings.conf', 'w') as conf:
+        conf.write(root.geometry())
+
+    root.destroy()
+
+root = None
 def main():
+    global root
+
     root = tk.Tk()
-    root.geometry('1280x720+200+200')
+    root.protocol("WM_DELETE_WINDOW", close_event)
+
+    if os.path.isfile('settings.conf'):
+        with open('settings.conf', 'r') as conf:
+            root.geometry(conf.readline())
+    else:
+        root.geometry('1280x720+100+100')
 
     app = MainWindow(root)
 
     database.init()
-
     root.mainloop()
 
 profile = False
