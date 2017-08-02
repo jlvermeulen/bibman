@@ -1,6 +1,11 @@
 import tkinter as tk
 import tkinter.filedialog as tkfiledialog
 import tkinter.scrolledtext as tkscrolledtext
+from tkinter import messagebox
+
+import os, os.path, shutil, re, bibtexparser
+
+import database as db
 
 class AddSource(tk.Frame):
     def __init__(self, parent):
@@ -41,8 +46,8 @@ class AddSource(tk.Frame):
 
         tk.Label(keywords_frame, text = 'Keywords:').grid(row = 0, column = 0, sticky = 'nesw')
 
-        self.keywords_entry = tk.Entry(keywords_frame)
-        self.keywords_entry.grid(row = 0, column = 1, sticky = 'nesw')
+        self.keywords_input = tk.Entry(keywords_frame)
+        self.keywords_input.grid(row = 0, column = 1, sticky = 'nesw')
 
         tk.Button(self, text = 'Add source', command = self.add_source).grid(row = 3, column = 0, sticky = 'nesw')
 
@@ -53,4 +58,32 @@ class AddSource(tk.Frame):
             self.pdf_entry.insert(0, filename)
 
     def add_source(self):
-        return
+        bibtex = self.bibtex_input.get('1.0', 'end')
+        parsed = bibtexparser.loads(bibtex)
+        if len(parsed.entries) != 1:
+            tk.messagebox.showerror('Invalid BibTeX', 'Please provide a single valid BibTeX entry.')
+            return
+        entry = parsed.entries[0]
+
+        pdf_path = self.pdf_entry.get()
+        if not os.path.isfile(pdf_path):
+            tk.messagebox.showerror('PDF file does not exist', 'Please give a path to an existing PDF file.')
+            return
+
+        if not os.path.isdir('pdfs'):
+            os.makedirs('pdfs')
+
+        title = re.sub('([^a-zA-Z0-9\- ])+', '', entry['title'])
+        if not os.path.samefile(pdf_path, os.path.join('pdfs', title + '.pdf')):
+            shutil.copyfile(pdf_path, os.path.join('pdfs', title + '.pdf'))
+
+        source = db.Source()
+        for field in db.fields:
+            if field in entry:
+                setattr(source, field, entry[field])
+        setattr(source, 'entry_type', entry['ENTRYTYPE'])
+        setattr(source, 'keywords', self.keywords_input.get())
+        setattr(source, 'summary', self.summary_input.get('1.0', 'end'))
+
+        db.session.add(source)
+        db.session.commit()

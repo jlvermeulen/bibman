@@ -3,12 +3,12 @@
 from tkinter import ttk
 import tkinter as tk
 
-import database
+import database as db
 from addsource import AddSource
 from findsource import FindSource
 from exportbibtex import ExportBibtex
 
-import os.path, glob, cProfile, bibtexparser
+import os.path, glob, cProfile
 
 test_string = '''@article{oliva13,
     author = "Oliva, R. and Pelechano, N.",
@@ -50,11 +50,11 @@ class MainWindow(tk.Frame):
         return
         self.parse_data(test_string)
         self.show_data()
-        database.session.commit()
+        db.session.commit()
 
     def parse_data(self, bibtex_entry):
         self.sources = []
-        self.sources.append(database.Source())
+        self.sources.append(db.Source())
 
         parsed = bibtexparser.loads(bibtex_entry)
         print(parsed.entries)
@@ -64,20 +64,7 @@ class MainWindow(tk.Frame):
             self.entry_data[field].append(value)
             setattr(self.sources[-1], field, value)
 
-        database.session.add(self.sources[-1])
-
-    def show_data(self):
-        i = 0
-        for field in self.fields:
-            j = 2
-            for value in self.entry_data[field]:
-                label = tk.Label(self.frame, text = value)
-                label.grid(row = j, column = i, sticky = 'w', padx = 10)
-                j = j + 1
-            i = i + 1
-
-    def write_bibtex(self):
-        return
+        db.session.add(self.sources[-1])
 
 def close_event():
     global root
@@ -102,7 +89,7 @@ def main():
 
     app = MainWindow(root)
 
-    database.init()
+    db.init()
     root.mainloop()
 
 profile = False

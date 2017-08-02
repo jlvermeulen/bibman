@@ -9,18 +9,33 @@ Base = declarative.declarative_base()
 class Source(Base):
     __tablename__ = 'sources'
 
-    id              = sql.Column(sql.Integer, primary_key = True)
-    title           = sql.Column(sql.Text)
-    author          = sql.Column(sql.Text)
-    journal         = sql.Column(sql.Text)
-    booktitle       = sql.Column(sql.Text)
-    volume          = sql.Column(sql.Text)
-    number          = sql.Column(sql.Text)
-    pages           = sql.Column(sql.Text)
-    year            = sql.Column(sql.Text)
-    additional      = sql.Column(sql.Text)
-    entry_type      = sql.Column(sql.Text)
+    id          = sql.Column(sql.Integer, primary_key = True)
+    title       = sql.Column(sql.Text)
+    author      = sql.Column(sql.Text)
+    journal     = sql.Column(sql.Text)
+    booktitle   = sql.Column(sql.Text)
+    volume      = sql.Column(sql.Text)
+    number      = sql.Column(sql.Text)
+    pages       = sql.Column(sql.Text)
+    year        = sql.Column(sql.Text)
+    note        = sql.Column(sql.Text)
+    school      = sql.Column(sql.Text)
+    entry_type  = sql.Column(sql.Text)
+    keywords    = sql.Column(sql.Text)
+    summary     = sql.Column(sql.Text)
 
+fields =   [
+                'title',
+                'author',
+                'journal',
+                'booktitle',
+                'volume',
+                'number',
+                'pages',
+                'year',
+                'note',
+                'school'
+            ]
 
 session = None
 def init():
