@@ -3,7 +3,7 @@ import tkinter.filedialog as tkfiledialog
 import tkinter.scrolledtext as tkscrolledtext
 from tkinter import messagebox
 
-import os, os.path, shutil, re, bibtexparser
+import os, os.path, shutil, bibtexparser
 
 import database as db
 
@@ -73,7 +73,7 @@ class AddSource(tk.Frame):
         if not os.path.isdir('pdfs'):
             os.makedirs('pdfs')
 
-        title = re.sub('([^a-zA-Z0-9\- ])+', '', entry['title'])
+        title = entry.stripped_title()
         if not os.path.samefile(pdf_path, os.path.join('pdfs', title + '.pdf')):
             shutil.copyfile(pdf_path, os.path.join('pdfs', title + '.pdf'))
 

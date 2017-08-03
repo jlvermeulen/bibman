@@ -7,6 +7,7 @@ import database as db
 from addsource import AddSource
 from findsource import FindSource
 from exportbibtex import ExportBibtex
+import settings
 
 import os.path, glob, cProfile
 
@@ -46,46 +47,16 @@ class MainWindow(tk.Frame):
 
         self.tabs.pack(fill = 'both', expand = 1)
 
-    def parse_bibtex(self):
-        return
-        self.parse_data(test_string)
-        self.show_data()
-        db.session.commit()
+    def destroy(self):
+        settings.set('main_window_geometry', self._nametowidget(self.winfo_parent()).geometry())
+        settings.save()
+        super().destroy()
 
-    def parse_data(self, bibtex_entry):
-        self.sources = []
-        self.sources.append(db.Source())
-
-        parsed = bibtexparser.loads(bibtex_entry)
-        print(parsed.entries)
-
-        for field in self.fields:
-            value = parsed.entries[0][field]
-            self.entry_data[field].append(value)
-            setattr(self.sources[-1], field, value)
-
-        db.session.add(self.sources[-1])
-
-def close_event():
-    global root
-
-    with open('settings.conf', 'w') as conf:
-        conf.write(root.geometry())
-
-    root.destroy()
-
-root = None
 def main():
-    global root
-
     root = tk.Tk()
-    root.protocol("WM_DELETE_WINDOW", close_event)
 
-    if os.path.isfile('settings.conf'):
-        with open('settings.conf', 'r') as conf:
-            root.geometry(conf.readline())
-    else:
-        root.geometry('1280x720+100+100')
+    settings.load()
+    root.geometry(settings.get('main_window_geometry'))
 
     app = MainWindow(root)
 
