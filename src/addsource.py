@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import messagebox
 
 import database as db
 from sourcebase import SourceBase

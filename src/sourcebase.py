@@ -1,8 +1,8 @@
 import tkinter as tk
-import tkinter.filedialog as tkfiledialog
 import tkinter.scrolledtext as tkscrolledtext
 
 import database as db
+import dialog
 
 import os, os.path, shutil, bibtexparser
 
@@ -49,7 +49,7 @@ class SourceBase(tk.Frame):
         self.keywords_input.grid(row = 0, column = 1, sticky = 'nesw')
 
     def browse_pdf(self):
-        filename = tkfiledialog.askopenfilename(filetypes = [('PDF files', '*.pdf')], parent = self)
+        filename = dialog.open_pdf(self)
         if filename:
             self.pdf_input.delete(0, 'end')
             self.pdf_input.insert(0, filename)
@@ -58,13 +58,21 @@ class SourceBase(tk.Frame):
         bibtex = self.bibtex_input.get('1.0', 'end')
         parsed = bibtexparser.loads(bibtex)
         if len(parsed.entries) != 1:
-            tk.messagebox.showerror('Invalid BibTeX', 'Please provide a single valid BibTeX entry.', parent = self)
+            dialog.invalid_bibtex(self)
             return -1
         entry = parsed.entries[0]
 
+        if not 'title' in entry:
+            dialog.no_title(self)
+            return -1
+
+        if not 'author' in entry:
+            dialog.no_author(self)
+            return -1
+
         pdf_path = self.pdf_input.get()
         if not os.path.isfile(pdf_path):
-            tk.messagebox.showerror('PDF file does not exist', 'Please give a path to an existing PDF file.', parent = self)
+            dialog.invalid_pdf_file(self)
             return -1
 
         for field in db.fields:

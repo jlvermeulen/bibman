@@ -25,10 +25,12 @@ class Source(Base):
     summary     = sql.Column(sql.Text)
 
     def list_entry(self):
-        return '{}, {}, {}'.format(self.author_surnames(), self.display_title(), self.year)
+        return '{}, {}{}'.format(self.author_surnames(), self.display_title(), ', {}'.format(self.year) if self.year else '')
 
     def author_surnames(self):
         surnames = [x.split(',')[0] for x in self.author.split(' and ')]
+        if len(surnames) == 1:
+            return surnames[0]
         return ' and '.join([', '.join(surnames[:-1]), surnames[-1]])
 
     def display_title(self):
@@ -50,6 +52,9 @@ class Source(Base):
                 bib += '    {} = "{}",\n'.format(field, getattr(self, field))
         return bib + '}\n'
 
+    def is_deleted(self):
+        return sql.inspect(self).detached
+
 fields =   [
                 'title',
                 'author',
@@ -62,6 +67,18 @@ fields =   [
                 'note',
                 'school'
             ]
+
+def query_author(author):
+    return session.query(Source).filter(Source.author.ilike('%{}%'.format(author))).all()
+
+def query_title(title):
+    return session.query(Source).filter(Source.title.ilike('%{}%'.format(title))).all()
+
+def query_keyword(keyword):
+    return session.query(Source).filter(Source.keywords.ilike('%{}%'.format(keyword))).all()
+
+def get_all():
+    return session.query(Source).all()
 
 session = None
 def init():
@@ -76,12 +93,3 @@ def init():
 
     global session
     session = DBSession()
-
-def query_author(author):
-    return session.query(Source).filter(Source.author.ilike('%{}%'.format(author))).all()
-
-def query_title(title):
-    return session.query(Source).filter(Source.title.ilike('%{}%'.format(title))).all()
-
-def query_keyword(keyword):
-    return session.query(Source).filter(Source.keywords.ilike('%{}%'.format(keyword))).all()

@@ -2,6 +2,7 @@ import tkinter as tk
 
 from viewsource import ViewSource
 import database as db
+import dialog
 
 class FindSource(tk.Frame):
     def __init__(self, parent):
@@ -20,19 +21,30 @@ class FindSource(tk.Frame):
 
         self.author_input = tk.Entry(input_frame)
         self.author_input.grid(row = 0, column = 1, sticky = 'nesw')
+        self.author_input.bind('<Return>', lambda x: self.search())
 
         self.title_input = tk.Entry(input_frame)
         self.title_input.grid(row = 1, column = 1, sticky = 'nesw')
+        self.title_input.bind('<Return>', lambda x: self.search())
 
         self.keyword_input = tk.Entry(input_frame)
         self.keyword_input.grid(row = 2, column = 1, sticky = 'nesw')
+        self.keyword_input.bind('<Return>', lambda x: self.search())
 
         tk.Button(self, text = 'Search', command = self.search).grid(row = 1, column = 0, sticky = 'nesw')
 
-        self.result_list = tk.Listbox(self, selectmode = 'single')
+        self.result_list = tk.Listbox(self, selectmode = 'extended')
         self.result_list.grid(row = 2, column = 0, sticky = 'nesw')
+        self.result_list.bind('<Return>', lambda x: self.view_selection())
+        self.result_list.bind('<Delete>', lambda x: self.delete_selection())
 
-        tk.Button(self, text = 'View source', command = self.open).grid(row = 3, column = 0, sticky = 'nesw')
+        button_frame = tk.Frame(self)
+        button_frame.grid(row = 3, column = 0, sticky = 'nesw')
+        tk.Grid.columnconfigure(button_frame, 0, weight = 1, uniform = 'equal')
+        tk.Grid.columnconfigure(button_frame, 1, weight = 1, uniform = 'equal')
+
+        tk.Button(button_frame, text = 'View source', command = self.view_selection).grid(row = 0, column = 0, sticky = 'nesw')
+        tk.Button(button_frame, text = 'Delete selection', command = self.delete_selection).grid(row = 0, column = 1, sticky = 'nesw')
 
     results = dict()
     def search(self):
@@ -51,12 +63,36 @@ class FindSource(tk.Frame):
         if keyword:
             keywords = db.query_keyword(keyword)
 
+        if not author and not title and not keywords:
+            authors = db.get_all()
+
         self.result_list.delete(0, 'end')
         for result in set().union(authors, titles, keywords):
             item = result.list_entry()
             self.results[item] = result
             self.result_list.insert('end', item)
 
-    def open(self):
+    def view_selection(self):
         for item in self.result_list.curselection():
-            ViewSource(self, self.results[self.result_list.get(item)])
+            source = self.results[self.result_list.get(item)]
+            if not source.is_deleted():
+                ViewSource(self, source)
+            else:
+                dialog.source_deleted(self, source)
+
+    def delete_selection(self):
+        selection = list(self.result_list.curselection())
+        if len(selection) == 0:
+            return
+
+        confirmed = dialog.confirm_deletion(self, len(selection))
+        if confirmed == 'no':
+            return
+
+        selection.sort(reverse = True)
+        for item in selection:
+            list_item = self.results.pop(self.result_list.get(item))
+            db.session.delete(list_item)
+            self.result_list.delete(item)
+
+        db.session.commit()

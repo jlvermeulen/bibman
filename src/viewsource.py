@@ -1,6 +1,6 @@
 import tkinter as tk
 
-import settings
+import settings, dialog
 from sourcebase import SourceBase
 import database as db
 
@@ -20,13 +20,13 @@ class ViewSource(tk.Toplevel):
 
         button_frame = tk.Frame(self)
         button_frame.grid(row = 1, column = 0, sticky = 'nesw')
-        tk.Grid.columnconfigure(button_frame, 0, weight = 1, uniform = 'equal')
-        tk.Grid.columnconfigure(button_frame, 1, weight = 1, uniform = 'equal')
-        tk.Grid.columnconfigure(button_frame, 2, weight = 1, uniform = 'equal')
+        for x in range(0, 4):
+            tk.Grid.columnconfigure(button_frame, x, weight = 1, uniform = 'equal')
 
-        tk.Button(button_frame, text = 'Save changes', command = self.save_changes).grid(row = 0, column = 0, sticky = 'nsew')
-        tk.Button(button_frame, text = 'View PDF', command = self.view_pdf).grid(row = 0, column = 1, sticky = 'nsew')
-        tk.Button(button_frame, text = 'Close', command = self.destroy).grid(row = 0, column = 2, sticky = 'nesw')
+        tk.Button(button_frame, text = 'Save changes', command = self.save_changes).grid(row = 0, column = 0, sticky = 'nesw')
+        tk.Button(button_frame, text = 'View PDF', command = self.view_pdf).grid(row = 0, column = 1, sticky = 'nesw')
+        tk.Button(button_frame, text = 'Remove entry', command = self.delete).grid(row = 0, column = 2, sticky = 'nesw')
+        tk.Button(button_frame, text = 'Close', command = self.destroy).grid(row = 0, column = 3, sticky = 'nesw')
 
         self.source = source
         self.load_values()
@@ -51,6 +51,15 @@ class ViewSource(tk.Toplevel):
             os.startfile(self.pdf_path)
         elif system == 'Darwin':
             subprocess.call(['open', self.pdf_path])
+
+    def delete(self):
+        confirmed = dialog.confirm_deletion(self, 1)
+        if confirmed == 'no':
+            return
+
+        db.session.delete(self.source)
+        db.session.commit()
+        self.destroy()
 
     def destroy(self):
         settings.set('view_window_geometry', super().geometry())
