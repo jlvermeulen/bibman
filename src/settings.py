@@ -4,7 +4,7 @@ import os.path
 
 settings =  {
                 'main_window_geometry': '1280x720+100+100',
-                'view_window_geometry': '600x600+0+0'
+                'view_window_geometry': '1000x600+0+0'
             }
 
 def load():

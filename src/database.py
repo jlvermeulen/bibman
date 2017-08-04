@@ -34,8 +34,21 @@ class Source(Base):
     def display_title(self):
         return re.sub('([^a-zA-Z0-9\-: ])+', '', self.title)
 
-    def stripped_title(self):
-        return re.sub('([^a-zA-Z0-9\- ])+', '', self.title)
+    def pdf_file_name(self):
+        return re.sub('([^a-zA-Z0-9\- ])+', '', self.title) + '.pdf'
+
+    def cite_name(self):
+        author_low = re.sub('([^a-zA-Z0-9])+', '', self.author.split(',')[0]).lower()
+        if self.year != None:
+            return author_low + self.year
+        return author_low
+
+    def bibtex(self):
+        bib = '@{}{{{},\n'.format(self.entry_type, self.cite_name())
+        for field in fields:
+            if getattr(self, field) != None:
+                bib += '    {} = "{}",\n'.format(field, getattr(self, field))
+        return bib + '}\n'
 
 fields =   [
                 'title',
@@ -69,3 +82,6 @@ def query_author(author):
 
 def query_title(title):
     return session.query(Source).filter(Source.title.ilike('%{}%'.format(title))).all()
+
+def query_keyword(keyword):
+    return session.query(Source).filter(Source.keywords.ilike('%{}%'.format(keyword))).all()
