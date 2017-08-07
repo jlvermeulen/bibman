@@ -6,17 +6,14 @@ import dialog
 
 import os, os.path, shutil, bibtexparser
 
-class SourceBase(tk.Frame):
+class SourceView(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.container = tk.Frame(self)
-        self.container.pack(fill = 'both', expand = 1, padx = 5, pady = 5)
+        tk.Grid.columnconfigure(self, 0, weight = 1)
+        tk.Grid.rowconfigure(self, 1, weight = 1)
 
-        tk.Grid.columnconfigure(self.container, 0, weight = 1)
-        tk.Grid.rowconfigure(self.container, 1, weight = 1)
-
-        pdf_frame = tk.Frame(self.container)
+        pdf_frame = tk.Frame(self)
         pdf_frame.grid(row = 0, column = 0, sticky = 'nesw', pady = (0, 2))
         tk.Grid.columnconfigure(pdf_frame, 1, weight = 1)
 
@@ -27,7 +24,7 @@ class SourceBase(tk.Frame):
 
         tk.Button(pdf_frame, text = '...', command = self.browse_pdf).grid(row = 0, column = 2, sticky = 'nesw')
 
-        input_frame = tk.Frame(self.container)
+        input_frame = tk.Frame(self)
         input_frame.grid(row = 1, column = 0, sticky = 'nesw', pady = 2)
         tk.Grid.columnconfigure(input_frame, 0, weight = 1)
         tk.Grid.columnconfigure(input_frame, 1, weight = 1)
@@ -42,7 +39,7 @@ class SourceBase(tk.Frame):
         self.summary_input = tkscrolledtext.ScrolledText(input_frame)
         self.summary_input.grid(row = 1, column = 1, sticky = 'nesw')
 
-        keywords_frame = tk.Frame(self.container)
+        keywords_frame = tk.Frame(self)
         keywords_frame.grid(row = 2, column = 0, sticky = 'nesw', pady = 2)
         tk.Grid.columnconfigure(keywords_frame, 1, weight = 1)
 

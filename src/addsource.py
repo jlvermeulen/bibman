@@ -1,16 +1,25 @@
 import tkinter as tk
 
 import database as db
-from sourcebase import SourceBase
+from sourceview import SourceView
 
-class AddSource(SourceBase):
+class AddSource(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        tk.Button(self.container, text = 'Add source', command = self.add_source).grid(row = 3, column = 0, sticky = 'nesw', pady = (2, 0))
+        container = tk.Frame(self)
+        container.pack(fill = 'both', expand = 1, padx = 5, pady = 5)
+
+        tk.Grid.columnconfigure(container, 0, weight = 1)
+        tk.Grid.rowconfigure(container, 0, weight = 1)
+
+        self.sourceview = SourceView(container)
+        self.sourceview.grid(row = 0, column = 0, sticky = 'nesw')
+
+        tk.Button(container, text = 'Add source', command = self.add_source).grid(row = 1, column = 0, sticky = 'nesw', pady = (2, 0))
 
     def add_source(self):
         source = db.Source()
-        self.update_source(source)
+        self.sourceview.update_source(source)
         db.session.add(source)
         db.session.commit()

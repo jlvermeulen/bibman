@@ -1,7 +1,7 @@
 import tkinter as tk
 
 import settings, dialog
-from sourcebase import SourceBase
+from sourceview import SourceView
 import database as db
 
 import os, os.path, subprocess, platform
@@ -11,13 +11,16 @@ class ViewSource(tk.Toplevel):
         super().__init__(parent)
         self.geometry(settings.get('view_window_geometry'))
 
-        tk.Grid.columnconfigure(self, 0, weight = 1)
-        tk.Grid.rowconfigure(self, 0, weight = 1)
+        container = tk.Frame(self)
+        container.pack(fill = 'both', expand = 1, padx = 5, pady = 5)
 
-        self.sourceview = SourceBase(self)
+        tk.Grid.columnconfigure(container, 0, weight = 1)
+        tk.Grid.rowconfigure(container, 0, weight = 1)
+
+        self.sourceview = SourceView(container)
         self.sourceview.grid(row = 0, column = 0, sticky = 'nesw')
 
-        button_frame = tk.Frame(self)
+        button_frame = tk.Frame(container)
         button_frame.grid(row = 1, column = 0, sticky = 'nesw')
         for x in range(0, 4):
             tk.Grid.columnconfigure(button_frame, x, weight = 1, uniform = 'equal')
