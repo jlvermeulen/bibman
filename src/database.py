@@ -78,7 +78,7 @@ def query_keyword(keyword):
     return session.query(Source).filter(Source.keywords.ilike('%{}%'.format(keyword))).all()
 
 def get_all():
-    return session.query(Source).all()
+    return session.query(Source).order_by(Source.author).all()
 
 session = None
 def init():

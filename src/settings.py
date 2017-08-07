@@ -4,7 +4,10 @@ import os, os.path, argparse
 
 settings =  {
                 'main_window_geometry': '1280x720+100+100',
-                'view_window_geometry': '1000x600+0+0'
+                'view_window_geometry': '1000x600+0+0',
+                'bibtex_export_location': './bibliography.bib',
+                'last_opened_source_dir': '.',
+                'export_file': './bibliography.bib'
             }
 
 def load():
