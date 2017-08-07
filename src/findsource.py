@@ -8,10 +8,13 @@ class FindSource(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
 
-        tk.Grid.columnconfigure(self, 0, weight = 1)
-        tk.Grid.rowconfigure(self, 2, weight = 1)
+        container = tk.Frame(self)
+        container.pack(fill = 'both', expand = 1, padx = 5, pady = 5)
 
-        input_frame = tk.Frame(self)
+        tk.Grid.columnconfigure(container, 0, weight = 1)
+        tk.Grid.rowconfigure(container, 2, weight = 1)
+
+        input_frame = tk.Frame(container)
         input_frame.grid(row = 0, column = 0, sticky = 'nesw')
         tk.Grid.columnconfigure(input_frame, 1, weight = 1)
 
@@ -20,31 +23,31 @@ class FindSource(tk.Frame):
         tk.Label(input_frame, text = 'Keyword:').grid(row = 2, column = 0, sticky = 'nsw')
 
         self.author_input = tk.Entry(input_frame)
-        self.author_input.grid(row = 0, column = 1, sticky = 'nesw')
+        self.author_input.grid(row = 0, column = 1, sticky = 'nesw', pady = (0, 2))
         self.author_input.bind('<Return>', lambda x: self.search())
 
         self.title_input = tk.Entry(input_frame)
-        self.title_input.grid(row = 1, column = 1, sticky = 'nesw')
+        self.title_input.grid(row = 1, column = 1, sticky = 'nesw', pady = 2)
         self.title_input.bind('<Return>', lambda x: self.search())
 
         self.keyword_input = tk.Entry(input_frame)
-        self.keyword_input.grid(row = 2, column = 1, sticky = 'nesw')
+        self.keyword_input.grid(row = 2, column = 1, sticky = 'nesw', pady = 2)
         self.keyword_input.bind('<Return>', lambda x: self.search())
 
-        tk.Button(self, text = 'Search', command = self.search).grid(row = 1, column = 0, sticky = 'nesw')
+        tk.Button(container, text = 'Search', command = self.search).grid(row = 1, column = 0, sticky = 'nesw', pady = 2)
 
-        self.result_list = tk.Listbox(self, selectmode = 'extended')
+        self.result_list = tk.Listbox(container, selectmode = 'extended')
         self.result_list.grid(row = 2, column = 0, sticky = 'nesw')
         self.result_list.bind('<Return>', lambda x: self.view_selection())
         self.result_list.bind('<Delete>', lambda x: self.delete_selection())
 
-        button_frame = tk.Frame(self)
+        button_frame = tk.Frame(container)
         button_frame.grid(row = 3, column = 0, sticky = 'nesw')
         tk.Grid.columnconfigure(button_frame, 0, weight = 1, uniform = 'equal')
         tk.Grid.columnconfigure(button_frame, 1, weight = 1, uniform = 'equal')
 
-        tk.Button(button_frame, text = 'View source', command = self.view_selection).grid(row = 0, column = 0, sticky = 'nesw')
-        tk.Button(button_frame, text = 'Delete selection', command = self.delete_selection).grid(row = 0, column = 1, sticky = 'nesw')
+        tk.Button(button_frame, text = 'View source', command = self.view_selection).grid(row = 0, column = 0, sticky = 'nesw', pady = (2, 0))
+        tk.Button(button_frame, text = 'Delete selection', command = self.delete_selection).grid(row = 0, column = 1, sticky = 'nesw', pady = (2, 0))
 
     results = dict()
     def search(self):

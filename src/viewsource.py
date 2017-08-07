@@ -10,7 +10,6 @@ class ViewSource(tk.Toplevel):
     def __init__(self, parent, source):
         super().__init__(parent)
         self.geometry(settings.get('view_window_geometry'))
-        self.config(padx = 5, pady = 5)
 
         tk.Grid.columnconfigure(self, 0, weight = 1)
         tk.Grid.rowconfigure(self, 0, weight = 1)
