@@ -64,9 +64,9 @@ class FindSource(tk.Frame):
         if title:
             titles = db.query_title(title)
         if keyword:
-            keywords = db.query_keyword(keyword)
+            keywords = db.query_keyword([x.strip() for x in keyword.split(',')])
 
-        if not author and not title and not keywords:
+        if not author and not title and not keyword:
             authors = db.get_all()
 
         self.result_list.delete(0, 'end')

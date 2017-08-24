@@ -74,8 +74,11 @@ def query_author(author):
 def query_title(title):
     return session.query(Source).filter(Source.title.ilike('%{}%'.format(title))).all()
 
-def query_keyword(keyword):
-    return session.query(Source).filter(Source.keywords.ilike('%{}%'.format(keyword))).all()
+def query_keyword(keywords):
+    result = session.query(Source)
+    for key in keywords:
+        result = result.filter(Source.keywords.ilike('%{}%'.format(key)))
+    return result.all()
 
 def get_all():
     return session.query(Source).order_by(Source.author).all()
