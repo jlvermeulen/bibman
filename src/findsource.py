@@ -70,7 +70,7 @@ class FindSource(tk.Frame):
             authors = db.get_all()
 
         self.result_list.delete(0, 'end')
-        for result in set().union(authors, titles, keywords):
+        for result in sorted(set().union(authors, titles, keywords), key = lambda x: x.author_surnames()):
             item = result.list_entry()
             self.results[item] = result
             self.result_list.insert('end', item)
