@@ -25,19 +25,16 @@ class Source(Base):
     summary     = sql.Column(sql.Text)
 
     def list_entry(self):
-        return '{}, {}{}'.format(self.author_surnames(), self.display_title(), ', {}'.format(self.year) if self.year else '')
+        return '{}, {}{}'.format(self.author_surnames(), strip_for_display(self.title), ', {}'.format(self.year) if self.year else '')
 
     def author_surnames(self):
-        surnames = [x.split(',')[0] for x in self.author.split(' and ')]
+        surnames = [strip_for_display(x.split(',')[0]) for x in self.author.split(' and ')]
         if len(surnames) == 1:
             return surnames[0]
         return ' and '.join([', '.join(surnames[:-1]), surnames[-1]])
 
-    def display_title(self):
-        return re.sub('([^a-zA-Z0-9\-: ])+', '', self.title)
-
     def pdf_file_name(self):
-        return re.sub('([^a-zA-Z0-9\- ])+', '', self.title) + '.pdf'
+        return strip_for_filename(self.title) + '.pdf'
 
     def cite_name(self):
         author_low = re.sub('([^a-zA-Z0-9])+', '', self.author.split(',')[0]).lower()
@@ -67,6 +64,12 @@ fields =   [
                 'note',
                 'school'
             ]
+
+def strip_for_display(text):
+    return re.sub('([^a-zA-Z0-9\-: ])+', '', text)
+
+def strip_for_filename(text):
+    return re.sub(':', ' -', strip_for_display(text))
 
 def query_author(author):
     return session.query(Source).filter(Source.author.ilike('%{}%'.format(author))).all()
