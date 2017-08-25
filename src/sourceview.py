@@ -82,7 +82,7 @@ class SourceView(tk.Frame):
                 setattr(source, field, None)
         setattr(source, 'entry_type', entry['ENTRYTYPE'])
         setattr(source, 'keywords', self.keywords_input.get())
-        setattr(source, 'summary', self.summary_input.get('1.0', 'end'))
+        setattr(source, 'summary', self.summary_input.get('1.0', 'end-1c'))
 
         if not os.path.isdir('pdfs'):
             os.makedirs('pdfs')
