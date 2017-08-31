@@ -48,7 +48,7 @@ class ViewSource(tk.Toplevel):
     def view_pdf(self):
         system = platform.system()
         if system == 'Linux':
-            subprocess.call(['xdg-open', self.pdf_path])
+            subprocess.call(['xdg-open', self.pdf_path], stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
         elif system == 'Windows':
             os.startfile(self.pdf_path)
         elif system == 'Darwin':
