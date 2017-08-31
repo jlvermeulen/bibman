@@ -30,7 +30,7 @@ def source_deleted(owner, source):
     messagebox.showerror('Source deleted', '"{}" was deleted from the database and can no longer be viewed.'.format(source.display_title()), parent = owner)
 
 def open_pdf(owner):
-    filename = filedialog.askopenfilename(initialdir = settings.get('last_opened_source_dir'), filetypes = [('PDF files', '*.pdf')], parent = owner)
+    filename = filedialog.askopenfilename(initialdir = settings.get('last_opened_source_dir'), filetypes = [('PDF files', '*.pdf'), ('PDF files', '*.PDF')], parent = owner)
     if filename:
         settings.set('last_opened_source_dir', os.path.dirname(filename))
     return filename
