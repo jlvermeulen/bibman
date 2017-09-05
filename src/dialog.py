@@ -23,6 +23,9 @@ def no_title(owner):
 def no_author(owner):
     messagebox.showerror('No author', 'A source must have an author.', parent = owner)
 
+def duplicate(owner):
+    messagebox.showerror('Duplicate entry', 'A source with the same title and authors is already in the database.', parent = owner)
+
 def invalid_pdf_file(owner):
     messagebox.showerror('PDF file does not exist', 'Please give a path to an existing PDF file.', parent = owner)
 

@@ -83,6 +83,9 @@ def query_keyword(keywords):
         result = result.filter(Source.keywords.ilike('%{}%'.format(key)))
     return result.all()
 
+def contains(source):
+    return len(set().union(query_author(source.author), query_title(source.title))) > 0
+
 def get_all():
     return session.query(Source).order_by(Source.author).all()
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import database as db
+import dialog
 from sourceview import SourceView
 
 class AddSource(tk.Frame):
@@ -21,5 +22,9 @@ class AddSource(tk.Frame):
     def add_source(self):
         source = db.Source()
         self.sourceview.update_source(source)
+
+        if db.contains(source):
+            dialog.duplicate(self)
+
         db.session.add(source)
         db.session.commit()
