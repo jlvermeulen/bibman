@@ -36,10 +36,20 @@ class FindSource(tk.Frame):
 
         tk.Button(container, text = 'Search', command = self.search).grid(row = 1, column = 0, sticky = 'nesw', pady = 2)
 
-        self.result_list = tk.Listbox(container, selectmode = 'extended')
-        self.result_list.grid(row = 2, column = 0, sticky = 'nesw')
+        list_frame = tk.Frame(container)
+        list_frame.grid(row = 2, column = 0, sticky = 'nesw')
+        tk.Grid.columnconfigure(list_frame, 0, weight = 1)
+        tk.Grid.rowconfigure(list_frame, 0, weight = 1)
+
+        self.result_list = tk.Listbox(list_frame, selectmode = 'extended')
+        self.result_list.grid(row = 0, column = 0, sticky = 'nesw')
         self.result_list.bind('<Return>', lambda x: self.view_selection())
         self.result_list.bind('<Delete>', lambda x: self.delete_selection())
+
+        scrollbar = tk.Scrollbar(list_frame, orient='vertical')
+        scrollbar.grid(row = 0, column = 1, sticky = 'nesw')
+        self.result_list.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.result_list.yview)
 
         button_frame = tk.Frame(container)
         button_frame.grid(row = 3, column = 0, sticky = 'nesw')
