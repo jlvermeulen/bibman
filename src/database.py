@@ -80,7 +80,10 @@ def query_title(title):
 def query_keyword(keywords):
     result = session.query(Source)
     for key in keywords:
-        result = result.filter(Source.keywords.ilike('%{}%'.format(key)))
+        if key[0] != '!':
+            result = result.filter(Source.keywords.ilike('%{}%'.format(key)))
+        else:
+            result = result.filter(~Source.keywords.ilike('%{}%'.format(key[1:])))
     return result.all()
 
 def contains(source):
