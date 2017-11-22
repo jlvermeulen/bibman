@@ -25,6 +25,7 @@ class AddSource(tk.Frame):
 
         if db.contains(source):
             dialog.duplicate(self)
+            return
 
         db.session.add(source)
         db.session.commit()
