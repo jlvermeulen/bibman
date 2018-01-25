@@ -87,7 +87,7 @@ def query_keyword(keywords):
     return result.all()
 
 def contains(source):
-    return len(set().union(query_author(source.author), query_title(source.title))) > 0
+    return len(session.query(Source).filter_by(title = source.title).filter_by(author = source.author).all()) > 0
 
 def get_all():
     return session.query(Source).order_by(Source.author).all()
